@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+import csv
 from .models import Expense
 from .serializers import ExpenseSerializer
 from datetime import datetime
@@ -175,3 +175,29 @@ class ExpenseDetailView(APIView):
                 data={"message": "Forbidden, Not Authorized"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+
+class ExportExpenseCsv(APIView):
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = "attachment; filename=expenses.csv"
+        writer = csv.writer(response)
+        writer.writerow(["name", "category", "amount", "description", "budget"])
+        expenses = (
+            Expense.objects.filter(user=request.user)
+            .filter(date__month=str(current_month))
+            .order_by("-id")
+        )
+        
+        for expense in expenses:
+            writer.writerow(
+                [
+                    expense.name,
+                    expense.category.name,
+                    expense.amount,
+                    expense.description,
+                    expense.category.budget,
+
+                ]
+            )
+            print(expense.category.budget)
+        return response
