@@ -63,6 +63,7 @@ class ExpenseListView(APIView):
                 data={"message": "Unable to create expense"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
 
 
 class ExpenseDetailView(APIView):
