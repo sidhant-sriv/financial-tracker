@@ -19,6 +19,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,6 +30,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'user',
     'income',
+    'category',
+    'expense',
 
 ]
 
@@ -42,6 +45,82 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
+
+JAZZMIN_SETTINGS = {
+    # title of the window
+    'site_title': 'My Admin',
+
+    # Title on the brand, and the login screen (19 chars max)
+    'site_header': 'My Admin',
+
+
+    # CSS classes that are applied to the logo above
+    'site_logo_classes': 'img-circle',
+
+    # Welcome text on the login screen
+    'welcome_sign': 'Welcome to My Admin',
+
+    # Copyright on the footer
+    'copyright': 'My Company',
+
+    # List of model admins to search from the search bar, search bar omitted if excluded
+    'search_model': ['auth.User', 'auth.Group'],
+
+    # Field name on user model that contains avatar image
+    'user_avatar': None,
+
+    # Top Menu Links, for quick access
+    'topmenu_links': [
+        {'name': 'Home',  'url': 'admin:index', 'permissions': ['auth.view_user']},
+        {'name': 'Support', 'url': 'https://support.mycompany.com', 'new_window': True},
+    ],
+
+    # Custom icons for apps and models
+    'icons': {
+        'auth': 'fas fa-users-cog',
+        'auth.user': 'fas fa-user',
+        'auth.Group': 'fas fa-users',
+    },
+
+    # Default icon classes applied when one is not supplied
+    'default_icon_parents': 'fas fa-chevron-circle-right',
+    'default_icon_children': 'fas fa-circle',
+
+    # Custom icons for side menu items
+    'icons': {
+        'auth': 'fas fa-users-cog',
+        'auth.user': 'fas fa-user',
+        'auth.Group': 'fas fa-users',
+    },
+
+    # Links to put along the top menu
+    'topmenu_links': [
+        {'name': 'Home',  'url': 'admin:index', 'permissions': ['auth.view_user']},
+        {'name': 'Support', 'url': 'https://support.mycompany.com', 'new_window': True},
+    ],
+
+    # Hide these apps when generating side menu e.g (auth)
+    'hide_apps': [],
+
+    # Hide these models when generating side menu (e.g auth.user)
+    'hide_models': [],
+
+    # Custom order of side menu (django model admin gets app/model name)
+    'order_with_respect_to': ['auth', 'auth.user', 'auth.group'],
+
+    # Whether to display the side menu
+    'navigation_expanded': True,
+
+    # Relative paths to custom CSS/JS scripts (must be present in static files)
+    'custom_css': 'css/custom_admin.css',
+    'custom_js': 'js/custom_admin.js',
+
+    # Whether to show the UI customizer on the sidebar
+    'show_ui_builder': False,
+}
+
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

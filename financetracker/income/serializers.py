@@ -6,4 +6,4 @@ class IncomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Income
         fields = "__all__"
-    depth = 2
+        depth = 2
