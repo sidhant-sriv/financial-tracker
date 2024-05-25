@@ -177,6 +177,13 @@ class ExpenseDetailView(APIView):
             )
 
 class ExportExpenseCsv(APIView):
+    """
+    API view to export expenses as a CSV file.
+
+    This view allows users to download their expenses as a CSV file.
+    The CSV file will contain the following columns: name, category, amount, description, budget.
+    """
+
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = "attachment; filename=expenses.csv"
@@ -196,8 +203,6 @@ class ExportExpenseCsv(APIView):
                     expense.amount,
                     expense.description,
                     expense.category.budget,
-
                 ]
             )
-            print(expense.category.budget)
         return response
