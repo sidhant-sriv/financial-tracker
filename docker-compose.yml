@@ -9,7 +9,7 @@ services:
       - mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 10s
+      timeout: 5s
       retries: 10
 
   web:
@@ -23,6 +23,16 @@ services:
       - .env
     environment:
       - DB_HOST=db
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      web:
+        condition: service_started
 
 volumes:
   mysql-data:
