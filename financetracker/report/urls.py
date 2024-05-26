@@ -8,10 +8,10 @@ urlpatterns = [
     path("report-day-graph/", views.ReportDayGraph.as_view(), name="report_day_graph"),
     path("report-week-graph/", views.ReportWeekGraph.as_view(), name="report_week_graph"),
     path("report-month-graph/", views.ReportMonthGraph.as_view(), name="report_month_graph"),
-    path(
-        "report-most-recent-expenses/",
-        views.reportMostRecentView.as_view(),
-        name="report_most_recent_expenses",
-    ),
-    path("report-net/", views.reportNetView.as_view(), name="report_net"),
+    path("report-most-recent-expenses/",views.ReportMostRecentView.as_view(),name="report_most_recent_expenses"),
+    path("report-net/", views.ReportNetView.as_view(), name="report_net"),
+    path("report-portfolios/", views.ReportPortfolioPerformanceSummaryView.as_view(), name="report_portfolios"),
+    path("report-weekly-investments/", views.ReportInvestmentsWeekGraphView.as_view(), name="report_weekly_investments"),
+    path("report-total-investments/", views.ReportInvestmentsTotalView.as_view(), name="report_total_investments"),
+
 ]

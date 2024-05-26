@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from datetime import datetime, timedelta
 INCOME = "income"
 EXPENSE = "expense"
 current_month = datetime.now().month
@@ -95,6 +95,15 @@ class ReportDayGraph(APIView):
 
 # Report each week of the month
 class ReportWeekGraph(APIView):
+    """
+    API view to retrieve filtered expenses for each week of the month.
+
+    Requires authentication.
+
+    Methods:
+    - get: Retrieves filtered expenses for each week of the month for the authenticated user.
+    """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -113,6 +122,16 @@ class ReportWeekGraph(APIView):
 
 # Monthly Expenses
 class ReportMonthGraph(APIView):
+    """
+    API view for generating a monthly expense report graph.
+
+    This view requires authentication and returns a filtered dataset of monthly expenses for the year.
+
+    Methods:
+    - get: Retrieves the monthly expenses for the year and returns a filtered dataset.
+
+    """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -127,6 +146,15 @@ class ReportMonthGraph(APIView):
 
 
 class ReportMostRecentView(APIView):
+    """
+    API view to retrieve the most recent expenses for the authenticated user.
+
+    Requires authentication.
+
+    Methods:
+    - get: Retrieves the most recent expenses for the authenticated user.
+    """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -146,6 +174,15 @@ class ReportMostRecentView(APIView):
 
 
 class ReportNetView(APIView):
+    """
+    API view for retrieving net expenses for the month.
+
+    Requires authentication.
+
+    Methods:
+    - get: Retrieves net expenses for the month for the authenticated user.
+    """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -169,6 +206,10 @@ class ReportNetView(APIView):
 
 
 class ReportCategoryView(APIView):
+    """
+    API view for retrieving filtered expense data grouped by categories.
+    """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -196,3 +237,71 @@ def get_expenses_daily_for_the_week(user):
         .order_by("week")
     )
     return filtered
+
+class ReportPortfolioPerformanceSummaryView(APIView):
+    """
+    A view for retrieving a summary of portfolio performance.
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        try:
+            portfolios = Portfolio.objects.filter(user=request.user)
+            serializer = PortfolioSerializer(portfolios, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response(
+                data={"message": "Unable to get portfolio performance summary"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+class ReportInvestmentsWeekGraphView(APIView):
+    """
+    API view for generating a graph of weekly investments for the current month.
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        try:
+            end_date = datetime.today()
+            start_date = end_date - timedelta(days=30)
+            weekly_investments = (
+                Investment.objects.filter(portfolio__user=request.user)
+                .filter(date_invested__range=[start_date, end_date])
+                .annotate(week=TruncWeek("date_invested"))
+                .values("week")
+                .annotate(total=Sum("amount"))
+                .order_by("week")
+            )
+            return Response({"filtered": weekly_investments}, status=status.HTTP_200_OK)
+        except:
+            return Response(
+                data={"message": "Unable to get weekly investments for the month"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+# Get total investment
+class ReportInvestmentsTotalView(APIView):
+    """
+    API view for generating a graph of total investments for the current month.
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        try:
+            end_date = datetime.today()
+            start_date = end_date - timedelta(days=30)
+            total_investments = (
+                Investment.objects.filter(portfolio__user=request.user)
+                .filter(date_invested__range=[start_date, end_date])
+                .aggregate(total=Sum("amount"))
+            )
+            return Response({"filtered": total_investments}, status=status.HTTP_200_OK)
+        except:
+            return Response(
+                data={"message": "Unable to get total investments for the month"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )

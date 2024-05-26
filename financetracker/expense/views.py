@@ -75,6 +75,7 @@ class ExpenseDetailView(APIView):
     - get(request, pk): Retrieves and returns the serialized data of the expense if the user is authorized.
     - put(request, pk): Updates the expense with the provided data if the user is authorized.
     - delete(request, pk): Deletes the expense if the user is authorized.
+    - post(request, pk): Creates a duplicate expense if the user is authorized.
     """
 
     permission_classes = (IsAuthenticated,)
@@ -170,6 +171,37 @@ class ExpenseDetailView(APIView):
         if request.user == expense.user:
             expense.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(
+                data={"message": "Forbidden, Not Authorized"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+    def post(self, request, pk):
+        """
+        Creates a duplicate expense if the user is authorized.
+
+        Parameters:
+        - request (HttpRequest): The HTTP request object.
+        - pk (int): The primary key of the expense.
+
+        Returns:
+        - Response: The serialized data of the created duplicate expense.
+
+        Raises:
+        - Response(status=status.HTTP_401_UNAUTHORIZED): If the user is not authorized to create the duplicate expense.
+        """
+        expense = self.get_object(pk)
+        if request.user == expense.user:
+            duplicate_expense = Expense.objects.create(
+                name=expense.name,
+                amount=expense.amount,
+                description=expense.description,
+                category_id=expense.category_id,
+                user=request.user,
+            )
+            serializer = ExpenseSerializer(duplicate_expense)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(
                 data={"message": "Forbidden, Not Authorized"},

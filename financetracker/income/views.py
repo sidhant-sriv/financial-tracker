@@ -64,15 +64,25 @@ class IncomeListView(APIView):
             )
 
 
+from django.http import Http404
+from datetime import datetime
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from income.models import Income
+from income.serializers import IncomeSerializer
+
 class IncomeDetailView(APIView):
     """
-    A view for retrieving, updating, and deleting an income object.
+    A view for retrieving, updating, deleting, and duplicating an income object.
 
     Methods:
     - get_object(pk): Retrieves the income object with the specified primary key.
     - get(request, pk): Retrieves the income object and returns its serialized data.
     - put(request, pk): Updates the income object with the provided data.
     - delete(request, pk): Deletes the income object.
+    - post(request, pk): Duplicates the income object with the current date.
     """
 
     permission_classes = (IsAuthenticated,)
@@ -115,7 +125,7 @@ class IncomeDetailView(APIView):
             serializer = IncomeSerializer(income)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            raise Response(data={"message": "Not permitted"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(data={"message": "Not permitted"}, status=status.HTTP_403_FORBIDDEN)
 
     def put(self, request, pk):
         """
@@ -137,8 +147,9 @@ class IncomeDetailView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            raise Http404
+            return Response(data={"message": "Not permitted"}, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, pk):
         """
@@ -159,4 +170,33 @@ class IncomeDetailView(APIView):
             income.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            raise Http404
+            return Response(data={"message": "Not permitted"}, status=status.HTTP_403_FORBIDDEN)
+
+    def post(self, request, pk):
+        """
+        Duplicates the income object with the current date.
+
+        Parameters:
+        - request (Request): The HTTP request object.
+        - pk (int): The primary key of the income object to be duplicated.
+
+        Returns:
+        - Response: The serialized data of the new income object.
+
+        Raises:
+        - Http404: If the income object with the specified primary key does not exist.
+        """
+        income = self.get_object(pk)
+        if request.user == income.user:
+            new_income = Income(
+                user=income.user,
+                name=income.name,
+                amount=income.amount,
+                date=datetime.now(), 
+                description=income.description
+            )
+            new_income.save()
+            serializer = IncomeSerializer(new_income)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data={"message": "Not permitted"}, status=status.HTTP_403_FORBIDDEN)
