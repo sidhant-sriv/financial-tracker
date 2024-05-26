@@ -50,20 +50,20 @@ REST_FRAMEWORK = {
 
 JAZZMIN_SETTINGS = {
     # title of the window
-    'site_title': 'My Admin',
+    'site_title': 'Admin panel',
 
     # Title on the brand, and the login screen (19 chars max)
-    'site_header': 'My Admin',
+    'site_header': 'Admin panel',
 
 
     # CSS classes that are applied to the logo above
     'site_logo_classes': 'img-circle',
 
     # Welcome text on the login screen
-    'welcome_sign': 'Welcome to My Admin',
+    'welcome_sign': 'Welcome to Admin panel',
 
     # Copyright on the footer
-    'copyright': 'My Company',
+    'copyright': 'FJ Finance Tracker',
 
     # List of model admins to search from the search bar, search bar omitted if excluded
     'search_model': ['auth.User', 'auth.Group'],
