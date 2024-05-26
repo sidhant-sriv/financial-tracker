@@ -47,3 +47,6 @@ This is the Take home assignment for the Fischer Jordan Backend Developer Role. 
 With a robust frontend dashboard.
 - OAuth2.0 integration for secure and convenient user authentication.
 - Integration with external APIs for real-time data updates and analysis.
+
+
+Postman documentation link: [FJ-BE-R2-sidhant-srivastava-VIT](https://documenter.getpostman.com/view/11385899/2sA3QqhDXS)
