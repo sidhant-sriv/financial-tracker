@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'income',
     'category',
     'expense',
+    'investment',
 
 ]
 
